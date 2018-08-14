@@ -8,6 +8,7 @@
     container_name: prestashop_apache_container
     image_namespace: geerlingguy
     image_name: php-apache
+    prestashop_root_path: "/var/www/html/"
 
     # Apache settings.
     apache_remove_default_vhost: yes
@@ -37,10 +38,7 @@
         name: '{{ container_name }}'
         command: sleep infinity
         env_file: env
-        #volumes:
-        #  - /etc/environment2:/etc/environment
-        #  - /etc/apt/apt.conf2:/etc/apt.conf
-        #  - /etc/resolv.conf:/etc/resolv.conf          
+        published_ports: "8083:80"
 
     - name: Add the newly created container to the inventory.
       add_host:
