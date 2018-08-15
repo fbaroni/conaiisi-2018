@@ -1,4 +1,6 @@
 #!/bin/bash
+#Esta es la opción un poco más compleja pero tampoco...
+#no arranca el contenedor de prestashop de manera correcta y directamente borre el dockerfile
 echo "RESTARTING DOCKER CONTAINER PRESTASHOP"
 
 container_db_name=my-mysql
