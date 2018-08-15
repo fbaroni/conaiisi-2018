@@ -1,3 +1,5 @@
 env
 !mysql-base/mysql/.gitkeep
 mysql-base/mysql/*
+!prestashop-image/mysql/.gitkeep
+prestashop-image/mysql/*
