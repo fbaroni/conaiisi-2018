@@ -4,7 +4,7 @@ echo "RESTARTING DOCKER CONTAINER PRESTASHOP"
 container_db_name=my-mysql
 container_prestashop_name=my-prestashop
 password_db=root
-forwarded_port=8084
+forwarded_port=8085
 forwarded_db_port=3038
 image_name=prestashop-conaiisi
 network_prestashop=network_prestashop
@@ -29,34 +29,19 @@ sudo chmod 777 -R www/
 docker stop ${container_prestashop_name} || true
 docker rm ${container_prestashop_name} || true
 
-proxy=${http_proxy}
-_no_proxy=${no_proxy}
-
-#BUILD DOCKER IMAGE
-docker build \
-        -t  ${image_name} \
-        --build-arg HTTP_PROXY=${proxy} \
-        --build-arg HTTPS_PROXY=${proxy} \
-        --build-arg FTP_PROXY=${proxy} \
-        --build-arg http_proxy=${proxy} \
-        --build-arg https_proxy=${proxy} \
-        --build-arg ftp_proxy=${proxy} \
-        --build-arg no_proxy=${_no_proxy} .
-
-
 docker run --hostname=${container_prestashop_name} \
            --link ${container_db_name} \
            --name=${container_prestashop_name} \
            --network=${network_prestashop} \
-           -e DB_HOSTNAME=${container_db_name} \
+           -e DB_SERVER=${container_db_name} \
            -v ${PWD}/www:/var/www/html \
            -e PS_INSTALL_AUTO=1 \
            -e PS_ERASE_DB=1 \
+           -e DB_USER=root \
+           -e DB_PASSWORD=root \
            -p ${forwarded_port}:80 \
-           -d ${image_name}
+           -d prestashop/prestashop
 
-echo "conectar a la red---";
 docker network connect ${network_prestashop} ${container_prestashop_name}
-
-echo "BASH";
+docker exec  ${container_prestashop_name} service apache2 restart && sleep infinity
 docker exec -it ${container_prestashop_name} /bin/bash

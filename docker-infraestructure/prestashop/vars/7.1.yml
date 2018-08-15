@@ -2,3 +2,30 @@
 php_version: '7.1'
 php_packages_extra:
   - libapache2-mod-php7.1
+
+prestashop_version: 1.7.1.1
+prestashop_url_download: "https://download.prestashop.com/download/releases/prestashop_{{ prestashop_version }}.zip"
+
+prestashop_root_path: "/var/www/html"
+
+prestashop_domain: "prestashop.1"
+prestashop_db_create: 1
+prestashop_db_clear: 1
+prestashop_db_server: "my-mysql"
+prestashop_db_name: "prestashop"
+prestashop_db_user: "root"
+prestashop_db_password: "root"
+prestashop_db_engine: "InnoDB"
+prestashop_db_prefix: "ps_"
+prestashop_language: "es"
+prestashop_country: "es"
+prestashop_timezone: "Europe/Madrid"
+prestashop_newsletter: 0
+
+prestashop_firstname: "PrestaShop"
+prestashop_lastname: "Developer"
+prestashop_password: "p_prestashop"
+prestashop_email: "dev@prestashop.com"
+
+prestashop_admin_folder_name: "adminpr2791"
+prestashop_check_file_name: "prestashop-installed.txt"

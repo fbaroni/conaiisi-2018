@@ -7,8 +7,7 @@
     base_image: debian:stretch
     container_name: prestashop_apache_container
     image_namespace: geerlingguy
-    image_name: php-apache
-    prestashop_root_path: "/var/www/html/prestashop/"
+    image_name: php-apache-prestashop
 
     # Apache settings.
     apache_remove_default_vhost: yes
@@ -30,7 +29,6 @@
       docker_image:
         name: '{{ base_image }}'
         force: yes
-
   
     - name: Create the Docker container.
       docker_container:
@@ -38,6 +36,9 @@
         name: '{{ container_name }}'
         command: sleep infinity
         env_file: env
+        network_mode: bridge
+        networks:
+            - { name: "network_prestashop"}
         published_ports: "8083:80"
 
     - name: Add the newly created container to the inventory.
@@ -97,7 +98,7 @@
         -c 'CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]'
         {{ container_name }} {{ image_namespace }}/{{ image_name }}:{{ php_version }}
 
-    #- name: Remove the container.
-    #  docker_container:
-    #    name: '{{ container_name }}'
-    #    state: absent
+    - name: Remove the container.
+      docker_container:
+        name: '{{ container_name }}'
+        state: absent
