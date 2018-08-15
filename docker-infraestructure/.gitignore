@@ -3,3 +3,5 @@ env
 mysql-base/mysql/*
 !prestashop-image/mysql/.gitkeep
 prestashop-image/mysql/*
+!prestashop-image/www/.gitkeep
+prestashop-image/www/*
