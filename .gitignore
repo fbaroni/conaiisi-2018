@@ -1,0 +1,7 @@
+docker-infraestructure/prestashop/env
+!docker-infraestructure/mysql-base/mysql/.gitkeep
+docker-infraestructure/mysql-base/mysql/*
+!docker-infraestructure/prestashop-image/mysql/.gitkeep
+docker-infraestructure/prestashop-image/mysql/*
+!docker-infraestructure/prestashop-image/www/.gitkeep
+docker-infraestructure/prestashop-image/www/*
