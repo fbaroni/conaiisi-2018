@@ -8,7 +8,9 @@ container_name=prestashop_${inst}
 mysql_container_name=pmysql
 container_db_net=db_network
 container_balancer_net=bal_network
-local_ip=10.4.9.66
+host_external_port=8008
+container_external_port=80
+
 
 docker stop ${container_name} && docker rm ${container_name}
 
@@ -37,11 +39,20 @@ docker run -ti \
            -e PS_DEV_MODE=1\
            -e PS_INSTALL_AUTO=1\
            -e PS_ERASE_DB=1\
-	   -e PS_DOMAIN=${local_ip}:8007\
+	   -e PS_DOMAIN=${container_name}:${container_external_port}\
            -e DB_USER=ps_user\
            -e DB_PASSWD=ps_password\
- 	   -p 8007:80\
+           -e HTTP_PROXY=${proxy} \
+           -e HTTPS_PROXY=${proxy} \
+           -e FTP_PROXY=${proxy} \
+           -e http_proxy=${proxy} \
+           -e https_proxy=${proxy} \
+           -e ftp_proxy=${proxy} \
+ 	   -p ${host_external_port}:${container_external_port}\
            -d jduttweiler/prestashop:1.7
+
+
+
 
 
 #Connect container to external network
