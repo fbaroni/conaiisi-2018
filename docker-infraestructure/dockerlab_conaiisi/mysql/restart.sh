@@ -1,6 +1,13 @@
 #!/bin/bash
 #Este script levanta un contenedor conteniendo una base de datos mysql
 
+#Create directory for the database
+host_directory_db=/mysql/prestashop
+mkdir -p ${host_directory_db}
+#chmod
+chmod 777 ${host_directory_db}
+
+
 container_name=pmysql
 container_net=db_network
 mysql_v=5
@@ -13,6 +20,7 @@ docker stop ${container_name} || true && docker rm ${container_name} || true
 docker run -ti \
 	   --name ${container_name} \
            -h ${container_name}\
+           -v ${host_directory_db}:/var/lib/mysql \
            -e MYSQL_DATABASE=prestashop\
  	   -e MYSQL_ROOT_PASSWORD=password\
   	   -e MYSQL_USER=ps_user\

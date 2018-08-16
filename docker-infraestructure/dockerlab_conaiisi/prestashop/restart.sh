@@ -2,15 +2,15 @@
 #Este script levanta un contenedor con prestashop
 #Es necesario que este contenedor se conecte a la misma docker network que el contenedor que contiene la base
 #mysql para poder usar la resolucion de nombres de docker
-inst=1
+inst=2
 image_name=jduttweiler/prestashop:1.7
 container_name=prestashop_${inst}
 mysql_container_name=pmysql
 container_db_net=db_network
 container_balancer_net=bal_network
+host_name=localhost
 host_external_port=8008
 container_external_port=80
-
 
 docker stop ${container_name} && docker rm ${container_name}
 
@@ -36,11 +36,8 @@ docker run -ti \
 	   --hostname ${container_name} \
 	   --network ${container_db_net} \
 	   -e DB_SERVER=${mysql_container_name} \
-           -e PS_DEV_MODE=1\
-           -e PS_INSTALL_AUTO=1\
-           -e PS_ERASE_DB=1\
-	   -e PS_DOMAIN=${container_name}:${container_external_port}\
            -e DB_USER=ps_user\
+           -e DB_NAME=prestashop\
            -e DB_PASSWD=ps_password\
            -e HTTP_PROXY=${proxy} \
            -e HTTPS_PROXY=${proxy} \
@@ -51,7 +48,10 @@ docker run -ti \
  	   -p ${host_external_port}:${container_external_port}\
            -d jduttweiler/prestashop:1.7
 
-
+#          -e PS_DEV_MODE=1\
+#          -e PS_INSTALL_AUTO=1\
+#          -e PS_ERASE_DB=1\
+#           -e PS_DOMAIN=${container_name}:${container_external_port}\
 
 
 
