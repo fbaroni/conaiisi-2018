@@ -6,17 +6,31 @@
 ####################################################################################
 ###                        OPTIONS & ARGUMENTS                                   ###
 ####################################################################################
+print_usage(){
+	echo "\
+    Options:
+         -d | --dry-run 
+         -f | --full-restart
+         -i | --instance 
+         -p | --external-port
+         -u | --usage 
+    "
+	exit
+}
+
+
 DRY_RUN=false
 FULL_RESTART=false
 INSTANCE_NUMBER=1
 host_external_port=8008
-
+site_domain="docker.conaiisi2018.prestashop.com"
 while true; do
   case "$1" in
     -d | --dry-run ) DRY_RUN=true; shift 1;;
-	-f | --full-restart ) FULL_RESTART=true; shift 1;;
+    -f | --full-restart ) FULL_RESTART=true; shift 1;;
     -i | --instance ) INSTANCE_NUMBER=$2; shift 2;;
     -p | --external-port ) host_external_port=$2; shift 2;;
+	-u | --usage ) print_usage ; shift 1;;
     * ) break ;;
   esac
 done
@@ -32,9 +46,9 @@ container_db_net=db_network
 container_balancer_net=bal_network
 host_name=localhost
 container_external_port=80
+prestashop_volume=prestashop-volume-${INSTANCE_NUMBER} #can use other volume?
+#prestashop_volume=prestashop-volume- #can use other volume?
 
-
-#BUILD DOCKER IMAGE
 proxy=${http_proxy}
 _no_proxy=${no_proxy} #Should be localhost,127.0.0.1,::1,santafe.gob.ar,santafe.gov.ar
 
@@ -42,8 +56,12 @@ _no_proxy=${no_proxy} #Should be localhost,127.0.0.1,::1,santafe.gob.ar,santafe.
 #                                 FUNCTIONS                                        #
 #----------------------------------------------------------------------------------#
 docker_clear_containers(){
-	docker stop ${container_name} 2>/dev/null
-	docker rm ${container_name} 2>/dev/null
+	if [ "$DRY_RUN" = false ] ; then
+    	echo "[DOCKER RUN] Stop previous containers"
+		docker stop ${container_name} 2>/dev/null
+    	echo "[DOCKER RUN] Remove previous containers"
+		docker rm ${container_name} 2>/dev/null
+	fi
 }
 
 docker_build_image(){
@@ -80,7 +98,14 @@ docker_run_container(){
 
 	if [ "$FULL_RESTART" = true ] ; then
 		echo "Run with full restart options"
-		full_restart_options=" -e PS_DEV_MODE=1 -e PS_INSTALL_AUTO=1 -e PS_ERASE_DB=1 " 
+		full_restart_options=" -e PS_DEV_MODE=1 \
+							   -e PS_INSTALL_AUTO=1 \
+							   -e PS_ERASE_DB=1 \
+							   -e PS_HANDLE_DYNAMIC_DOMAIN=1 \
+							   -e PS_SHOP_URL=${site_domain} \
+							   -e PS_DOMAIN=${site_domain}
+							   " 
+							   #That's why we made this option PS_HANDLE_DYNAMIC_DOMAIN. Its updates the registered domain every time a user reaches the shop from another address.
 	fi
 
 	local db_options="-e DB_SERVER=${mysql_container_name} \
@@ -95,7 +120,7 @@ docker_run_container(){
 				\t --name ${container_name} \n \
 				\t --hostname ${container_name} \n \
 				\t --network ${container_db_net} \n \
-				\t --mount source=prestashop-volume,target=/var/www/html \n \
+				\t --mount source=${prestashop_volume},target=/var/www/html \n \
    				\t ${db_options} \n \
 				\t ${proxy_options} \n \
 				\t ${full_restart_options} \n \
@@ -106,7 +131,7 @@ docker_run_container(){
 		--name ${container_name} \
 		--hostname ${container_name} \
 		--network ${container_db_net} \
-		--mount source=prestashop-volume,target=/var/www/html \
+		--mount source=${prestashop_volume},target=/var/www/html \
 		   ${db_options} \
 	 	   ${proxy_options} \
 	 	   ${full_restart_options} \
@@ -127,7 +152,7 @@ docker_build_image
 docker_run_container
 
 #docker network create ${container_db_net}
-#docker network connect ${container_balancer_net} ${container_name}s
+#docker network connect ${container_balancer_net} ${container_name}
 #Volume
 #Create directory for the database
 #docker volume create prestashop-volume
