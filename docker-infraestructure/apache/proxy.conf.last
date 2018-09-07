@@ -1,0 +1,8 @@
+<Proxy balancer://ClusterMember>
+BalancerMember http://prestashop_1:80
+BalancerMember http://prestashop_2:80
+Require all granted
+</Proxy>
+#ProxyPass / balancer://ClusterMember/
+ProxyPass / balancer://ClusterMember/ stickysession=PHPSESSID
+ProxyPassReverse / balancer://ClusterMember/

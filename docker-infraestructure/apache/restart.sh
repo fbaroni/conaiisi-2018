@@ -6,6 +6,7 @@
 #Container vars
 image_name="jduttweiler/apache:sticky"
 container_name="dart7"
+container_network="db_network"
 
 docker stop ${container_name}
 docker rm ${container_name}
@@ -24,5 +25,5 @@ docker build -t ${image_name} .
 
 docker run -d \
 	-P \
-	--network="prestashop_network" \ 
+	--network=${container_network} \
 	--name=${container_name} ${image_name}

@@ -1,0 +1,9 @@
+<Proxy balancer://ClusterMember>
+BalancerMember http://worker1:port
+BalancerMember http://worker2:port
+Order deny,allow
+Allow from all
+</Proxy>
+ProxyPass / balancer://ClusterMember/
+#ProxyPass / balancer://ClusterMember/ stickysession=PHPSESSID
+ProxyPassReverse / balancer://ClusterMember/
